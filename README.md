@@ -1,7 +1,4 @@
-# Even Interview
-
-This is the results of the technical test I receive after
-interviewing with EVEN Financials.  
+# Financial Application
 
 The goal is to:
 
