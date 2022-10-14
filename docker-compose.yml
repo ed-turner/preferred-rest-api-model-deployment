@@ -1,0 +1,90 @@
+version: "3"
+
+services:
+
+  app:
+    build: .
+    restart: unless-stopped
+    container_name: app
+    environment:
+      DB_URI: "sqlite+aiosqlite:////data/db/source.db"
+      RIDGE_MODEL_URI: "http://RidgeLog:5001/invocations"
+      LASSO_MODEL_URI: "http://LassoLog:5002/invocations"
+    ports:
+      - "0.0.0.0:8000:8000"
+    expose:
+      - "8000"
+    volumes:
+      - ./data/db/source.db:/data/db/source.db
+    command: [
+      "gunicorn",
+      "financial_app.api.__main__:create_app",
+      "--bind",
+      "0.0.0.0:8000",
+      "--workers",
+      "4",
+      "--worker-class",
+      "uvicorn.workers.UvicornWorker",
+      "--timeout",
+      "60",
+      "-k",
+      "gevent",
+      "--statsd-host",
+      "promstats:9125",
+      "--statsd-prefix",
+      "WebServer"
+    ]
+    networks:
+      - model-tier
+    depends_on:
+      - RidgeLog
+      - LassoLog
+
+  RidgeLog:
+    image: ridge-log
+    container_name: RidgeLog
+    restart: unless-stopped
+    environment:
+      GUNICORN_CMD_ARGS: "--bind=0.0.0.0:5001 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=RidgeLog"
+      DISABLE_NGINX: "yes"
+    expose:
+      - "5001"
+    networks:
+      - model-tier
+
+  LassoLog:
+    image: lasso-log
+    container_name: LassoLog
+    restart: unless-stopped
+    environment:
+      GUNICORN_CMD_ARGS: "--bind=0.0.0.0:5002 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=LassoLog"
+      DISABLE_NGINX: "yes"
+    expose:
+      - "5002"
+    networks:
+      - model-tier
+
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    ports:
+      - 9000:9090
+    volumes:
+      - ./monitoring/prometheus/config:/etc/prometheus
+      - ./monitoring/prometheus:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - model-tier
+
+  promstats:
+    image: prom/statsd-exporter
+    command: "--statsd.mapping-config=/statsd/statsd.yml"
+    ports:
+      - "9125:9125"
+      - "9102:9102"
+    volumes:
+      - ./monitoring/prometheus/config/statsd.yml:/statsd/statsd.yml
+    networks:
+      - model-tier
+
+networks:
+  model-tier:

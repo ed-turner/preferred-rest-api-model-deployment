@@ -1,0 +1,76 @@
+mappings:
+  - match: "LassoLog.gunicorn.request.status.*"
+    help: "LassoLog gunicorn response code"
+    name: "LassoLog_gunicorn_response_code"
+    labels:
+      app: "$1"
+      status: "$2"
+  - match: "LassoLog.gunicorn.workers"
+    name: "LassoLog_gunicorn_workers"
+    labels:
+      app: "$1"
+  - match: "LassoLog.gunicorn.requests"
+    name: "LassoLog_gunicorn_requests"
+    labels:
+      app: "$1"
+  - match: "LassoLog.gunicorn.request.duration"
+    name: "LassoLog_gunicorn_request_duration"
+    labels:
+      app: "$1"
+
+  - match: "RidgeLog.gunicorn.request.status.*"
+    help: "RidgeLog gunicorn response code"
+    name: "RidgeLog_gunicorn_response_code"
+    labels:
+      app: "$1"
+      status: "$2"
+  - match: "RidgeLog.gunicorn.workers"
+    name: "RidgeLog_gunicorn_workers"
+    labels:
+      app: "$1"
+  - match: "RidgeLog.gunicorn.requests"
+    name: "RidgeLog_gunicorn_requests"
+    labels:
+      app: "$1"
+  - match: "RidgeLog.gunicorn.request.duration"
+    name: "RidgeLog_gunicorn_request_duration"
+    labels:
+      app: "$1"
+
+  - match: LassoLog.gunicorn.request.status.*
+    help: "http response code"
+    name: "http_response_code"
+    labels:
+      status: "$1"
+      job: "LassoLog_gunicorn_response_code"
+
+  - match: RidgeLog.gunicorn.request.status.*
+    help: "http response code"
+    name: "http_response_code"
+    labels:
+      status: "$1"
+      job: "RidgeLog_gunicorn_response_code"
+  - match: "WebServer.gunicorn.request.status.*"
+    help: "WebServer gunicorn response code"
+    name: "WebServer_gunicorn_response_code"
+    labels:
+      app: "$1"
+      status: "$2"
+  - match: "WebServer.gunicorn.workers"
+    name: "WebServer_gunicorn_workers"
+    labels:
+      app: "$1"
+  - match: "WebServer.gunicorn.requests"
+    name: "WebServer_gunicorn_requests"
+    labels:
+      app: "$1"
+  - match: "WebServer.gunicorn.request.duration"
+    name: "WebServer_gunicorn_request_duration"
+    labels:
+      app: "$1"
+  - match: WebServer.gunicorn.request.status.*
+    help: "http response code"
+    name: "http_response_code"
+    labels:
+      status: "$1"
+      job: "WebServer_gunicorn_response_code"
