@@ -18,7 +18,7 @@ services:
       - ./data/db/source.db:/data/db/source.db
     command: [
       "gunicorn",
-      "financial_app.api.__main__:create_app",
+      "financial_app.api.__main__:create_app()",
       "--bind",
       "0.0.0.0:8000",
       "--workers",
@@ -28,7 +28,7 @@ services:
       "--timeout",
       "60",
       "-k",
-      "gevent",
+      "uvicorn.workers.UvicornWorker",
       "--statsd-host",
       "promstats:9125",
       "--statsd-prefix",
