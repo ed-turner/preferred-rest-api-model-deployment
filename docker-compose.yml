@@ -8,8 +8,6 @@ services:
     container_name: app
     environment:
       DB_URI: "sqlite+aiosqlite:////data/db/source.db"
-      RIDGE_MODEL_URI: "http://RidgeLog:5001/invocations"
-      LASSO_MODEL_URI: "http://LassoLog:5002/invocations"
     ports:
       - "0.0.0.0:8000:8000"
     expose:

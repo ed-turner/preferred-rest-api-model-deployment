@@ -12,20 +12,6 @@ class TrainingSettings(Settings):
 
 
 class ServingSettings(Settings):
-    RIDGE_MODEL_URI: str = Field(
-        "http://127.0.0.1:5000/invocations",
-        env="RIDGE_MODEL_URI"
-    )
-
-    LASSO_MODEL_URI = Field(
-        "http://127.0.0.1:5001/invocations",
-        env="LASSO_MODEL_URI"
-    )
-
-    GBDT_MODEL_URI = Field(
-        "http://127.0.0.1:5002/invocations",
-        env="GBDT_MODEL_URI"
-    )
 
     @property
     def async_db_uri(self):

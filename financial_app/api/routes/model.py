@@ -8,16 +8,14 @@ import httpx
 
 from sqlalchemy.sql import select
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio.result import AsyncResult
 
 from financial_app.data.request import OfferRequestPydanticModel
 from financial_app.data.response import PredictionResponseModel, ModelChangeStatusResponseModel
 from financial_app.data.sql.orm import Leads, Predictions, \
     ModelChangeAuditHistory, ProductionModelRegistry
-from financial_app.settings import ServingSettings
 
 
-def define_model_routes(get_session: Callable, settings: ServingSettings) -> APIRouter:
+def define_model_routes(get_session: Callable) -> APIRouter:
     """
 
     :param get_session:
@@ -83,7 +81,7 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
             ProductionModelRegistry.model_name == model_name
         ).order_by(
             ProductionModelRegistry.created_at.desc()
-        ).first()
+        )
 
         production_model: ProductionModelRegistry = (await session.execute(stmt)).first()
 
@@ -147,7 +145,7 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
             ProductionModelRegistry.model_name == model_name
         ).order_by(
             ProductionModelRegistry.created_at.desc()
-        ).first()
+        )
 
         production_model: ProductionModelRegistry = (await session.execute(stmt)).first()
 

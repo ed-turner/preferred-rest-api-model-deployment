@@ -31,6 +31,6 @@ def create_app(db_uri: Optional[str] = None):
     except Exception:
         get_session = create_db_async_session_generator(settings.async_db_uri)
 
-    _app.include_router(define_model_routes(get_session, settings), prefix="/model")
+    _app.include_router(define_model_routes(get_session), prefix="/model")
 
     return _app
