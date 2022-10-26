@@ -12,7 +12,8 @@ from sqlalchemy.ext.asyncio.result import AsyncResult
 
 from financial_app.data.request import OfferRequestPydanticModel
 from financial_app.data.response import PredictionResponseModel, ModelChangeStatusResponseModel
-from financial_app.data.sql.orm import Leads, Predictions, ModelChangeAuditHistory
+from financial_app.data.sql.orm import Leads, Predictions, \
+    ModelChangeAuditHistory, ProductionModelRegistry
 from financial_app.settings import ServingSettings
 
 
@@ -25,6 +26,27 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
     """
 
     model_router = APIRouter()
+
+    @model_router.post("/add")
+    async def model_add(
+            model_name: str,
+            model_uri: str,
+            session: AsyncSession = Depends(get_session)
+    ):
+        """
+
+        :return:
+        """
+
+        # this is the default model to work with
+        production_model = ProductionModelRegistry(
+            model_name=model_name,
+            model_uri=model_uri
+        )
+
+        session.add(production_model)
+
+        await session.commit()
 
     @model_router.get("/status")
     async def model_status(session: AsyncSession = Depends(get_session)) -> ModelChangeStatusResponseModel:
@@ -40,11 +62,7 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
 
         if model_change_name is None:
             # this is the default model to work with
-            model_change_name = ModelChangeAuditHistory(model_name="even-financial-ridge-log")
-
-            session.add(model_change_name)
-            await session.flush()
-            await session.commit()
+            raise HTTPException(404, detail="There is no model in production")
         else:
             model_change_name = model_change_name[0]
 
@@ -61,10 +79,15 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
 
         :return:
         """
+        stmt = select(ProductionModelRegistry).filter(
+            ProductionModelRegistry.model_name == model_name
+        ).order_by(
+            ProductionModelRegistry.created_at.desc()
+        ).first()
 
-        # TODO This is temporary.  Later we will remove this
+        production_model: ProductionModelRegistry = (await session.execute(stmt)).first()
 
-        if model_name in ["ridge-log", "lasso-log"]:
+        if production_model:
             model_change_name = ModelChangeAuditHistory(model_name=model_name)
 
             session.add(model_change_name)
@@ -75,7 +98,8 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
 
     @model_router.post("/inference")
     async def model_inference(
-            data: OfferRequestPydanticModel, session: AsyncSession = Depends(get_session),
+            data: OfferRequestPydanticModel,
+            session: AsyncSession = Depends(get_session),
             override_model_name: Optional[str] = None
     ) -> PredictionResponseModel:
         """
@@ -116,13 +140,21 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
             else:
                 raise HTTPException(404, detail="""
                 The production model has to be set. 
-                This can be done so with a curl to the '/model/status' path
+                This can be done so with a curl to the '/model/add' path
                 """)
 
-        if model_name == "even-financial-ridge-log":
-            http_url = settings.RIDGE_MODEL_URI
+        stmt = select(ProductionModelRegistry).filter(
+            ProductionModelRegistry.model_name == model_name
+        ).order_by(
+            ProductionModelRegistry.created_at.desc()
+        ).first()
+
+        production_model: ProductionModelRegistry = (await session.execute(stmt)).first()
+
+        if production_model:
+            http_url = production_model.model_uri
         else:
-            http_url = settings.LASSO_MODEL_URI
+            raise HTTPException(404, detail="the production model does not exist")
 
         _data = {"instances": [data_dict]}
 
@@ -137,7 +169,7 @@ def define_model_routes(get_session: Callable, settings: ServingSettings) -> API
 
         pred_db: Predictions = Predictions(
             prediction=predicted_class,
-            model_name=model_name,
+            model_id=production_model.id,
             offer_id=data.offer_id
         )
 

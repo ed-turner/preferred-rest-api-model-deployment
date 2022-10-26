@@ -152,8 +152,8 @@ def init_lasso_logistic_regression():
         ),
         search_spaces={"logistic_regression__C": Real(1e-16, 1e16, prior='log-uniform')},
         cv=5,
-        scoring="f1",
-        n_iter=10
+        scoring="roc_auc",
+        n_iter=50
     )
 
 
@@ -167,8 +167,8 @@ def init_ridge_logistic_regression():
         ),
         search_spaces={"logistic_regression__C": Real(1e-16, 1e16, prior='log-uniform')},
         cv=5,
-        scoring="f1",
-        n_iter=10
+        scoring="roc_auc",
+        n_iter=50
     )
 
 

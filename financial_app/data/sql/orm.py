@@ -56,4 +56,17 @@ class Predictions(Base):
     prediction = Column(Float)
     offer_id = Column(Integer)
     created_at = Column(DateTime, default=datetime.utcnow)
+    model_id = Column(String)
+
+
+class ProductionModelRegistry(Base):
+    """
+    This is purely for the example.
+
+    In production, we would not be able to
+    """
+    __tablename__ = "production_model_registry"
+    id = Column(String, primary_key=True, default=lambda _: uuid.uuid4().hex)
+    created_at = Column(DateTime, default=datetime.utcnow)
     model_name = Column(String)
+    model_uri = Column(String)
