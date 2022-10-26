@@ -39,6 +39,9 @@ deploy.image.build.lasso:
 deploy.image.build.ridge:
 	poetry run mlflow models build-docker --model-uri ${MLFLOW_RIDGE_MODEL_URI} --name "ridge-log"
 
+deploy.image.build.gbdt:
+	poetry run mlflow models build-docker --model-uri ${MLFLOW_GBDT_MODEL_URI} --name "gbdt"
+
 requirements.add:
 	poetry add $(argument)
 
@@ -53,3 +56,11 @@ api.server.launch:
 
 clean:
 	rm -r data
+
+
+migrate.init:
+	poetry run alembic init alembic
+
+migrate:
+	poetry run alembic revision --autogenerate -m $(argument)
+	poetry run alembic upgrade head
