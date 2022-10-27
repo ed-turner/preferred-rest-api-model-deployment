@@ -1,0 +1,32 @@
+apiVersion: v1
+data:
+  alert.yml: |-
+    groups:
+      - name: DemoAlerts
+        rules:
+          - alert: InstanceDown
+            expr: up{job="services"} < 1
+            for: 5m
+  prometheus.yml: |-
+    global:
+      scrape_interval: 30s
+      scrape_timeout: 10s
+
+    rule_files:
+      - alert.yml
+
+    scrape_configs:
+      - job_name: prometheus
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - 'prometheus:9090'
+      - job_name: model-api
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - 'promstats:9102'
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: web

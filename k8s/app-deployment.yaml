@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.yml convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f ../docker-compose.yml convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/model-tier: "true"
+        io.kompose.service: app
+    spec:
+      containers:
+        - args:
+            - gunicorn
+            - financial_app.api.__main__:create_app()
+            - --bind
+            - 0.0.0.0:8000
+            - --workers
+            - "4"
+            - --worker-class
+            - uvicorn.workers.UvicornWorker
+            - --timeout
+            - "60"
+            - -k
+            - uvicorn.workers.UvicornWorker
+            - --statsd-host
+            - promstats:9125
+            - --statsd-prefix
+            - WebServer
+          env:
+            - name: DB_URI
+              value: sqlite+aiosqlite:////data/db/source.db
+          image: preferred-rest-api-model-deployment_app
+          name: app
+          ports:
+            - containerPort: 8000
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/db/source.db
+              name: app-claim0
+      restartPolicy: Always
+      volumes:
+        - name: app-claim0
+          persistentVolumeClaim:
+            claimName: app-claim0
+status: {}

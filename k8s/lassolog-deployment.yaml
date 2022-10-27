@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.yml convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: lassolog
+  name: lassolog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: lassolog
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f ../docker-compose.yml convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/model-tier: "true"
+        io.kompose.service: lassolog
+    spec:
+      containers:
+        - env:
+            - name: DISABLE_NGINX
+              value: "yes"
+            - name: GUNICORN_CMD_ARGS
+              value: --bind=0.0.0.0:5002 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=lassolog
+          image: lasso-log
+          name: lassolog
+          ports:
+            - containerPort: 5002
+          resources: {}
+      restartPolicy: Always
+status: {}

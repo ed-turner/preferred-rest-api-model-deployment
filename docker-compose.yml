@@ -37,6 +37,19 @@ services:
     depends_on:
       - RidgeLog
       - LassoLog
+      - GBDT
+
+  GBDT:
+    image: gbdt
+    container_name: GBDT
+    restart: unless-stopped
+    environment:
+      GUNICORN_CMD_ARGS: "--bind=0.0.0.0:5003 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=GBDT"
+      DISABLE_NGINX: "yes"
+    expose:
+      - "5003"
+    networks:
+      - model-tier
 
   RidgeLog:
     image: ridge-log

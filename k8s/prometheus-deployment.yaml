@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file ../docker-compose.yml convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: prometheus
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: prometheus
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file ../docker-compose.yml convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/model-tier: "true"
+        io.kompose.service: prometheus
+    spec:
+      containers:
+        - args:
+            - --web.enable-lifecycle
+            - --config.file=/etc/prometheus/prometheus.yml
+          image: prom/prometheus:v2.30.3
+          name: prometheus
+          ports:
+            - containerPort: 9090
+          resources:
+            limits:
+              cpu: '200m'
+              memory: '200Mi'
+            requests:
+              cpu: '100m'
+              memory: '100Mi'
+          volumeMounts:
+            - mountPath: /etc/prometheus
+              name: prometheus-claim0
+            - mountPath: /prometheus
+              name: prometheus-claim1
+      restartPolicy: Always
+      volumes:
+        - name: prometheus-claim0
+          persistentVolumeClaim:
+            claimName: prometheus-claim0
+        - name: prometheus-claim1
+          persistentVolumeClaim:
+            claimName: prometheus-claim1
+status: {}

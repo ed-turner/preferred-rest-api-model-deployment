@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file ../docker-compose.yml convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: promstats
+  name: promstats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: promstats
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file ../docker-compose.yml convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/model-tier: "true"
+        io.kompose.service: promstats
+    spec:
+      containers:
+        - args:
+            - --statsd.mapping-config=/statsd/statsd.yml
+          image: prom/statsd-exporter
+          name: promstats
+          ports:
+            - containerPort: 9125
+            - containerPort: 9102
+          resources:
+            limits:
+              cpu: '200m'
+              memory: '200Mi'
+            requests:
+              cpu: '100m'
+              memory: '100Mi'
+          volumeMounts:
+            - mountPath: /statsd/statsd.yml
+              name: config-volume
+              subPath: statsd.yml
+      restartPolicy: Always
+      volumes:
+        - name: config-volume
+          configMap:
+            name: promstats
+status: {}

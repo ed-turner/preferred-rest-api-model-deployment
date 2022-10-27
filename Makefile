@@ -51,9 +51,6 @@ mlflow.server.launch:
 app.server.build:
 	poetry build --format wheel
 
-api.server.launch:
-	poetry run uvicorn financial_app.api.__main__:create_app
-
 clean:
 	rm -r data
 
@@ -64,3 +61,17 @@ migrate.init:
 migrate:
 	poetry run alembic revision --autogenerate -m $(argument)
 	poetry run alembic upgrade head
+
+k8s.init.mac:
+
+	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
+
+k8s.test:
+
+	kubectl config get-contexts
+	kubectl config use-context docker-desktop
+	kubectl apply -f ./k8s
+	kubectl get services --sort-by=.metadata.name
+	kubectl port-forward svc/app 8000:8000
+	kubectl port-forward svc/prometheus 9000:9000
+	kind delete cluster
