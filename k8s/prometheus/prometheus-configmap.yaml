@@ -27,6 +27,7 @@ data:
           - targets:
               - 'promstats:9102'
 kind: ConfigMap
+immutable: true
 metadata:
   creationTimestamp: null
-  name: web
+  name: prometheus

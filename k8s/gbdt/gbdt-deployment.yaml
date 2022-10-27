@@ -31,6 +31,7 @@ spec:
             - name: GUNICORN_CMD_ARGS
               value: --bind=0.0.0.0:5003 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=gbdt
           image: gbdt
+          imagePullPolicy: "IfNotPresent"
           name: gbdt
           ports:
             - containerPort: 5003

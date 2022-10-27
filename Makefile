@@ -70,8 +70,11 @@ k8s.test:
 
 	kubectl config get-contexts
 	kubectl config use-context docker-desktop
-	kubectl apply -f ./k8s
+	kubectl apply -f ./k8s/gbdt
+	kubectl apply -f ./k8s/lassolog
+	kubectl apply -f ./k8s/ridgelog
+	kubectl apply -f ./k8s/db
+	kubectl apply -f ./k8s/promstats
 	kubectl get services --sort-by=.metadata.name
 	kubectl port-forward svc/app 8000:8000
 	kubectl port-forward svc/prometheus 9000:9000
-	kind delete cluster

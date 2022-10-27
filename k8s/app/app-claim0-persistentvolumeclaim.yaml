@@ -6,7 +6,7 @@ metadata:
     io.kompose.service: app-claim0
   name: app-claim0
 spec:
-  storageClassName: hostpath
+  storageClassName: manual
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce

@@ -78,6 +78,7 @@ data:
           status: "$1"
           job: "WebServer_gunicorn_response_code"
 kind: ConfigMap
+immutable: true
 metadata:
   creationTimestamp: null
-  name: web
+  name: promstats

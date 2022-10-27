@@ -42,14 +42,14 @@ spec:
               memory: '100Mi'
           volumeMounts:
             - mountPath: /etc/prometheus
-              name: prometheus-claim0
+              name: config-volume
             - mountPath: /prometheus
               name: prometheus-claim1
       restartPolicy: Always
       volumes:
-        - name: prometheus-claim0
-          persistentVolumeClaim:
-            claimName: prometheus-claim0
+        - name: config-volume
+          configMap:
+            name: prometheus
         - name: prometheus-claim1
           persistentVolumeClaim:
             claimName: prometheus-claim1
