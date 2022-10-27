@@ -74,7 +74,10 @@ k8s.test:
 	kubectl apply -f ./k8s/lassolog
 	kubectl apply -f ./k8s/ridgelog
 	kubectl apply -f ./k8s/db
+	kubectl apply -f ./k8s/app
 	kubectl apply -f ./k8s/promstats
+	kubectl apply -f ./k8s/prometheus
 	kubectl get services --sort-by=.metadata.name
-	kubectl port-forward svc/app 8000:8000
-	kubectl port-forward svc/prometheus 9000:9000
+	kubectl port-forward svc/app 8000:8000 &
+	kubectl port-forward svc/prometheus 9000:9000 &
+	kubectl port-forward svc/promstats 9102:9102 &

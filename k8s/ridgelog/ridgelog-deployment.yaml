@@ -31,6 +31,7 @@ spec:
             - name: GUNICORN_CMD_ARGS
               value: --bind=0.0.0.0:5001 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=ridgelog
           image: ridge-log
+          imagePullPolicy: "IfNotPresent"
           name: ridgelog
           ports:
             - containerPort: 5001

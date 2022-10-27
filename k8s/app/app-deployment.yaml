@@ -45,18 +45,12 @@ spec:
             - WebServer
           env:
             - name: DB_URI
-              value: sqlite+aiosqlite:////data/db/source.db
+              value: postgresql+asyncpg://admin:psltest@postgres:5432/postgresdb
           image: preferred-rest-api-model-deployment_app
+          imagePullPolicy: "IfNotPresent"
           name: app
           ports:
             - containerPort: 8000
           resources: {}
-          volumeMounts:
-            - mountPath: /data/db/source.db
-              name: app-claim0
       restartPolicy: Always
-      volumes:
-        - name: app-claim0
-          persistentVolumeClaim:
-            claimName: app-claim0
 status: {}

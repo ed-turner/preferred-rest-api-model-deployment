@@ -31,6 +31,7 @@ spec:
             - name: GUNICORN_CMD_ARGS
               value: --bind=0.0.0.0:5002 --timeout 60 -k gevent --statsd-host=promstats:9125 --statsd-prefix=lassolog
           image: lasso-log
+          imagePullPolicy: "IfNotPresent"
           name: lassolog
           ports:
             - containerPort: 5002
