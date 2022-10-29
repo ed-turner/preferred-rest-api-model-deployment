@@ -9,7 +9,7 @@ import httpx
 from sqlalchemy.sql import select
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from financial_app.data.request import OfferRequestPydanticModel
+from financial_app.data.request import OfferRequestPydanticModel, ModelAddPayload
 from financial_app.data.response import PredictionResponseModel, ModelChangeStatusResponseModel
 from financial_app.data.sql.orm import Leads, Predictions, \
     ModelChangeAuditHistory, ProductionModelRegistry
@@ -27,8 +27,7 @@ def define_model_routes(get_session: Callable) -> APIRouter:
 
     @model_router.post("/add")
     async def model_add(
-            model_name: str,
-            model_uri: str,
+            payload: ModelAddPayload,
             session: AsyncSession = Depends(get_session)
     ):
         """
@@ -38,8 +37,8 @@ def define_model_routes(get_session: Callable) -> APIRouter:
 
         # this is the default model to work with
         production_model = ProductionModelRegistry(
-            model_name=model_name,
-            model_uri=model_uri
+            model_name=payload.model_name,
+            model_uri=payload.model_uri
         )
 
         session.add(production_model)
@@ -147,7 +146,7 @@ def define_model_routes(get_session: Callable) -> APIRouter:
             ProductionModelRegistry.created_at.desc()
         )
 
-        production_model: ProductionModelRegistry = (await session.execute(stmt)).first()
+        production_model: ProductionModelRegistry = (await session.execute(stmt)).first()[0]
 
         if production_model:
             http_url = production_model.model_uri

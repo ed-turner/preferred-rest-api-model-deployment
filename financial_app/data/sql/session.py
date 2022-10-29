@@ -21,8 +21,10 @@ def create_db_session_generator(db_uri: str) -> Callable:
         with session_maker() as session:
             try:
                 yield session
-            except Exception:
+            except Exception as e:
                 session.rollback()
+
+                raise e
 
     return get_session
 
@@ -46,8 +48,10 @@ def create_db_async_session_generator(db_uri: str) -> Callable:
         async with async_session() as session:
             try:
                 yield session
-            except Exception:
+            except Exception as e:
                 await session.rollback()
+
+                raise e
 
     return get_session
 

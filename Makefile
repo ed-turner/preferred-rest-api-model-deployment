@@ -81,3 +81,7 @@ k8s.test:
 	kubectl port-forward svc/app 8000:8000 &
 	kubectl port-forward svc/prometheus 9000:9000 &
 	kubectl port-forward svc/promstats 9102:9102 &
+
+
+make k8s.clean:
+	kubectl delete all --all
