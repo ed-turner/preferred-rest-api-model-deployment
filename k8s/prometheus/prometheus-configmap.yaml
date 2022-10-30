@@ -4,7 +4,6 @@ metadata:
   name: prometheus-server-conf
   labels:
     name: prometheus-server-conf
-  namespace: monitoring
 data:
   prometheus.rules: |-
     groups:
@@ -31,6 +30,11 @@ data:
           - "alertmanager.monitoring.svc:9093"
 
     scrape_configs:
+      - job_name: models
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - ["promstats:9102"]
       - job_name: 'node-exporter'
         kubernetes_sd_configs:
           - role: endpoints

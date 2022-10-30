@@ -65,10 +65,7 @@ migrate:
 k8s.init.mac:
 	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
 
-k8s.init.namespace:
-	kubectl create namespace monitoring
-
-k8s.test:
+k8s.test.init:
 
 	kubectl config get-contexts
 	kubectl config use-context docker-desktop
@@ -80,11 +77,11 @@ k8s.test:
 	kubectl apply -f ./k8s/app
 	kubectl apply -f ./k8s/promstats
 	kubectl apply -f ./k8s/prometheus
+	kubectl get pods
 	kubectl get services --sort-by=.metadata.name
-	kubectl port-forward svc/app 8000:8000 &
-	kubectl port-forward svc/prometheus 9000:9000 &
-	kubectl port-forward svc/promstats 9102:9102 &
+	# kubectl port-forward svc/app 8000:8000 &
+	# kubectl port-forward svc/prometheus-service 8080:8080 --namespace monitoring &
 
 
-k8s.clean:
+k8s.test.clean:
 	kubectl delete all --all

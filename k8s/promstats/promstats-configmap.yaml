@@ -2,83 +2,25 @@ apiVersion: v1
 data:
   statsd.yml: |-
     mappings:
-      - match: "lassolog.gunicorn.request.status.*"
-        help: "lassolog gunicorn response code"
-        name: "lassolog_gunicorn_response_code"
+      - match: "*.gunicorn.request.status.*"
+      help: "gunicorn response code"
+      name: "gunicorn_response_code"
+      labels:
+        app: "$1"
+        status: "$2"
+      - match: "*.gunicorn.workers"
+        name: "gunicorn_workers"
         labels:
           app: "$1"
-          status: "$2"
-      - match: "lassolog.gunicorn.workers"
-        name: "lassolog_gunicorn_workers"
+      - match: "*.gunicorn.requests"
+        name: "gunicorn_requests"
         labels:
           app: "$1"
-      - match: "lassolog.gunicorn.requests"
-        name: "lassolog_gunicorn_requests"
+      - match: "*.gunicorn.request.duration"
+        name: "gunicorn_request_duration"
         labels:
           app: "$1"
-      - match: "lassolog.gunicorn.request.duration"
-        name: "lassolog_gunicorn_request_duration"
-        labels:
-          app: "$1"
-
-      - match: "ridgelog.gunicorn.request.status.*"
-        help: "ridgelog gunicorn response code"
-        name: "ridgelog_gunicorn_response_code"
-        labels:
-          app: "$1"
-          status: "$2"
-      - match: "ridgelog.gunicorn.workers"
-        name: "ridgelog_gunicorn_workers"
-        labels:
-          app: "$1"
-      - match: "ridgelog.gunicorn.requests"
-        name: "ridgelog_gunicorn_requests"
-        labels:
-          app: "$1"
-      - match: "ridgelog.gunicorn.request.duration"
-        name: "ridgelog_gunicorn_request_duration"
-        labels:
-          app: "$1"
-
-      - match: lassolog.gunicorn.request.status.*
-        help: "http response code"
-        name: "http_response_code"
-        labels:
-          status: "$1"
-          job: "lassolog_gunicorn_response_code"
-
-      - match: ridgelog.gunicorn.request.status.*
-        help: "http response code"
-        name: "http_response_code"
-        labels:
-          status: "$1"
-          job: "ridgelog_gunicorn_response_code"
-      - match: "WebServer.gunicorn.request.status.*"
-        help: "WebServer gunicorn response code"
-        name: "WebServer_gunicorn_response_code"
-        labels:
-          app: "$1"
-          status: "$2"
-      - match: "WebServer.gunicorn.workers"
-        name: "WebServer_gunicorn_workers"
-        labels:
-          app: "$1"
-      - match: "WebServer.gunicorn.requests"
-        name: "WebServer_gunicorn_requests"
-        labels:
-          app: "$1"
-      - match: "WebServer.gunicorn.request.duration"
-        name: "WebServer_gunicorn_request_duration"
-        labels:
-          app: "$1"
-      - match: WebServer.gunicorn.request.status.*
-        help: "http response code"
-        name: "http_response_code"
-        labels:
-          status: "$1"
-          job: "WebServer_gunicorn_response_code"
 kind: ConfigMap
-immutable: true
 metadata:
   creationTimestamp: null
   name: promstats

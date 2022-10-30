@@ -33,20 +33,15 @@ spec:
           ports:
             - containerPort: 9125
             - containerPort: 9102
-          resources:
-            limits:
-              cpu: '200m'
-              memory: '200Mi'
-            requests:
-              cpu: '100m'
-              memory: '100Mi'
+          resources: {}
           volumeMounts:
-            - mountPath: /statsd/statsd.yml
+            - mountPath: /statsd/
               name: config-volume
-              subPath: statsd.yml
       restartPolicy: Always
       volumes:
         - name: config-volume
           configMap:
             name: promstats
+        - name: prometheus-stats-storage-volume
+          emptyDir: { }
 status: {}
