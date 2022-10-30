@@ -63,13 +63,16 @@ migrate:
 	poetry run alembic upgrade head
 
 k8s.init.mac:
-
 	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
+
+k8s.init.namespace:
+	kubectl create namespace monitoring
 
 k8s.test:
 
 	kubectl config get-contexts
 	kubectl config use-context docker-desktop
+
 	kubectl apply -f ./k8s/gbdt
 	kubectl apply -f ./k8s/lassolog
 	kubectl apply -f ./k8s/ridgelog
@@ -83,5 +86,5 @@ k8s.test:
 	kubectl port-forward svc/promstats 9102:9102 &
 
 
-make k8s.clean:
+k8s.clean:
 	kubectl delete all --all
